@@ -8,6 +8,7 @@ import numpy as np
 import seaborn as sns
 import matplotlib.pyplot as plt
 from geopy.geocoders import Nominatim
+import shapely
 
 
 prod = pd.read_csv("Data/Production Table.CSV")
@@ -49,6 +50,7 @@ prodshp = gp.read_file("zip://Data/production.ZIP")
 permitshp = gp.read_file("zip://Data/production.ZIP")
 permitshp.crs
 
+leasesgeo = gp.read_file("Data/LeasesTable.CSV")
 
 converse = permitshp[permitshp["County"]=="CONVERSE (WY)"]
 
