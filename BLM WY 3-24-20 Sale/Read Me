@@ -101,7 +101,7 @@ Export training lease data with target variable and input variables
 * Drop older leases (older than 2007) due to uncorrelated behavior.
     * Technology and shale plays were not prolific within AOI before 2008. Therefore, low prices with acceptable revenue would not accurately reflect today's conditions and price action
 
-## 5. ML 
+## 5. Training and Testing Model (Linear and Tree) - Applied on Sales Results 
 1. Preprocessing
 * inputs and target variables were scaled using sklearn's standard scalar object
 
@@ -142,8 +142,17 @@ Export training lease data with target variable and input variables
 2.  After scraping data, the script will insert values into created sale template Excel spreadsheeting using openpyxl package
 
 3.  After sale is complete, the script can execute a function to scrape the sale url to find bid amount based on company's bidder number.  The winning bid quantity is then automatically inputted into the sale spreadsheet to summarize capital spent
-
+A
 4. Finally, paperwork required to be submitted to federal government agency are filled in using field pdf template.  Fields required to be filled in are amount paid, total amount due, serial numbers, state, and date.
 * Reference article for completing this task: https://bostata.com/how-to-populate-fillable-pdfs-with-python/
 
-
+# Other Folders/Files
+1.  GlobalFuncts_n_Vars.py contains functions and variables needed in multiple notebooks
+2.  Data Folder - Folder for raw/source data
+    * Training Data for Models: Permits, Production, Leases, Oil Prices, Gas Prices
+    * Data for Sale Note Automation: Permits, Production, Old Production
+3.  Output Data Folder - Folder for exported data
+    * Sale tracts activity/filtered data (production, permits, leases around sale tracts)
+    * Training leases activity/filtered data (production, permits)
+    - Cleaned training data after EDA
+4.  Results Folder - Folder for exported sale tract notes, visualizaiton pdf
