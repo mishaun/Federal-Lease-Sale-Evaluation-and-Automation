@@ -20,6 +20,42 @@ import math
 import datetime as dt
 import pdb
 
+
+#Global Vars
+
+#radius for evaluation
+miradius = 3
+milesbuffer = miradius * 1609.34
+
+#Sale Date
+saleDate = pd.Timestamp(dt.date(2020, 3, 23))
+
+#creating list of columns for learning variables on particular lease
+learningCols = ["Total Permits", "Total Wells", "Avg First 6 Mo Oil", "Avg First 6 Mo Gas", "Qi Oil", "Qi Gas", "6 Mo Oil Revenue $", "6 Mo Gas Rev $", "Oil Price", "Gas Price" ]
+
+#Prices
+#get historical oil price data
+oilPrices = pd.read_excel("Data/oilPrices.xls", sheet_name="Data 1", header=2)
+
+#renaming price column to something more concise 
+oilPrices.rename(columns = {'Cushing, OK WTI Spot Price FOB (Dollars per Barrel)' : "WTI Price"} , inplace = True)
+
+#appending data to the data frame for missing months manually - setting march 2020 price to $25/bbl
+oilPrices = oilPrices.append({'Date': pd.to_datetime('2020-03-15', format='%Y-%m-%d', errors='ignore'), 'WTI Price': 25}, ignore_index = True)
+
+#Setting the index of the dataframe as the date and then filtering to data within last 10 years
+oilPrices.set_index("Date", inplace = True)
+oilPrices = oilPrices.loc[oilPrices.index.year > 1999] 
+
+#get historical gas price data
+gasPrices = pd.read_excel("Data/gasPrices.xls", sheet_name="Data 1", header=2)
+
+gasPrices.set_index('Date', inplace = True)
+gasPrices.rename(columns = {'Henry Hub Natural Gas Spot Price (Dollars per Million Btu)': 'Gas Price'}, inplace = True)
+gasPrices = gasPrices.loc[gasPrices.index.year > 1999] 
+
+# Global Functions
+
 def convertCRS(*args, crs_system = 26913):
     for i in args:
         print(i.crs)
@@ -113,37 +149,3 @@ def getTrainingMeasures(LeasesForEval, leaseIndex, trainProd, trainPermits):
     prodFilter["LeaseIndex"] = leaseIndex
     
     return permFilter, prodFilter
-                
-
-#Global Vars
-
-#radius for evaluation
-miradius = 3
-milesbuffer = miradius * 1609.34
-
-#Sale Date
-saleDate = pd.Timestamp(dt.date(2020, 3, 23))
-
-#creating list of columns for learning variables on particular lease
-learningCols = ["Total Permits", "Total Wells", "Avg First 6 Mo Oil", "Avg First 6 Mo Gas", "Qi Oil", "Qi Gas", "6 Mo Oil Revenue $", "6 Mo Gas Rev $", "Oil Price", "Gas Price" ]
-
-#Prices
-#get historical oil price data
-oilPrices = pd.read_excel("Data/oilPrices.xls", sheet_name="Data 1", header=2)
-
-#renaming price column to something more concise 
-oilPrices.rename(columns = {'Cushing, OK WTI Spot Price FOB (Dollars per Barrel)' : "WTI Price"} , inplace = True)
-
-#appending data to the data frame for missing months manually - setting march 2020 price to $25/bbl
-oilPrices = oilPrices.append({'Date': pd.to_datetime('2020-03-15', format='%Y-%m-%d', errors='ignore'), 'WTI Price': 25}, ignore_index = True)
-
-#Setting the index of the dataframe as the date and then filtering to data within last 10 years
-oilPrices.set_index("Date", inplace = True)
-oilPrices = oilPrices.loc[oilPrices.index.year > 1999] 
-
-#get historical gas price data
-gasPrices = pd.read_excel("Data/gasPrices.xls", sheet_name="Data 1", header=2)
-
-gasPrices.set_index('Date', inplace = True)
-gasPrices.rename(columns = {'Henry Hub Natural Gas Spot Price (Dollars per Million Btu)': 'Gas Price'}, inplace = True)
-gasPrices = gasPrices.loc[gasPrices.index.year > 1999] 
