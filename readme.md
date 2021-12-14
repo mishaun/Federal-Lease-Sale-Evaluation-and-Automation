@@ -33,7 +33,7 @@ Developed by Mishaun Bhakta for Magnum Producing, LP and R&R Royalty, LTD
 ### Image of Manual Process
 * Draw 3 mile radius-> Manually intepret, analyze, and write summaries based on permits, production, and leases table.
 
-![demo](Images/demoanalysis.gif)
+![demo](Images/demomanualanalysis.gif)
 
 # Code and Packages
 
