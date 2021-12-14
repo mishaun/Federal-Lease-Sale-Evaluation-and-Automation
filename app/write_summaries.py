@@ -13,29 +13,47 @@
 import pandas as pd
 import geopandas as gp
 import numpy as np
-import seaborn as sns
-import matplotlib.pyplot as plt
+# import seaborn as sns
+# import matplotlib.pyplot as plt
 import os
 #had to add GDAL_DATA variable to system variables and set value to the folder of gdal in C:\Users\mishaun\AppData\Local\Continuum\anaconda3\Library\share\gdal on my work computer
 'GDAL_DATA' in os.environ
 
+import configparser
+config = configparser.ConfigParser()
+config.read('/Users/Mishaun_Bhakta/Documents/Python & Projects/Projects/BLM Lease Evaluation and Automation/settings/config.ini')
+
+miradius = config.getint("FILTER", "mi_radius")
+
 
 #writing fuction to get data from pandas dataframe that was accessed from file
-def getActivityData(tractNum):
+def getActivityData(tractNum,fullFilteredLeases, fullFilteredPermits, fullFilteredProd, fullFilteredOldProd):
     
     '''
-    This function will filter fullFiltered global variable dataframes to tract specific data
+    This function will filter source data's dataframes to tract specific data
+
+
+    tractNum = tract id in sale tract shapefile to perform filtering
+    fullFilteredLeases, fullFilteredPermits, fullFilteredProd, fullFilteredOldProd = dataframes holding oil and gas data (permits, production, leases) to specific tracts in programs mile radius buffer
+
     '''
-    
+
+    # looking up tract id in passed dataframes
     tractLeases = fullFilteredLeases.loc[fullFilteredLeases["tract_id"] == tractNum]
     tractPermits = fullFilteredPermits.loc[fullFilteredPermits["tract_id"] == tractNum]
     tractProd = fullFilteredProd.loc[fullFilteredProd["tract_id"] == tractNum]
     tractOldProd = fullFilteredOldProd.loc[fullFilteredOldProd["tract_id"] == tractNum]
     
-    return tractPermits, tractProd, tractLeases, tractOldProd
+    return tractLeases, tractPermits, tractProd,  tractOldProd
 
 # ### Function to write permits around tract summary
 def writePermitSummary(geoDF):
+
+    '''
+
+    function will use passed in dataframe to write statistical summary regarding permits around given tract called from main program
+
+    '''
     
     #getting overall count of permits within in the spatial filter
     count = int(geoDF["API10UWI"].count())
@@ -85,6 +103,10 @@ def writePermitSummary(geoDF):
 
 # ### Function to write leases around tract summary
 def writeLeaseSummary(geoDF):
+
+    '''
+    function will use passed in dataframe to write statistical summary regarding leases around given tract called from main program
+    '''
     
     #getting overall count of leases within in the spatial filter
     count = geoDF["Grantee Alias"].count()
@@ -167,6 +189,11 @@ def writeLeaseSummary(geoDF):
 
 # ### Last 4 years of production summary function
 def writeProdSummary(geoDF):
+
+    '''
+
+    function will use passed in dataframe to write statistical summary regarding new production around given tract called from main program
+    '''
     
     #getting overall count of leases within in the spatial filter
     overallcount = geoDF["APIUWI"].count()
@@ -252,7 +279,16 @@ def writeProdSummary(geoDF):
     return summaryText
 
 # ### Function and Log to write Old Production Summary
-def writeOldProdSummary(geoDF, tractNum):
+def writeOldProdSummary(geoDF, saleTracts, tractNum):
+
+    '''
+
+    function will use passed in dataframe to write statistical summary regarding old around given tract called from main program
+
+    saleTracts geodataframe will be required to perform geospatial filter to look for data in tract/polgon boundaries
+    tractNum will be passed to access sale tract's tract id to pull its polygon to perform the geospatial filter
+
+    '''
     
     
     #cleans up production dataframe in case import had such data values when imported from drillinginfo
@@ -264,7 +300,7 @@ def writeOldProdSummary(geoDF, tractNum):
         return "No old wells within tract or in 3 mile radius of tract."
     
     #this line regrabs the tract geometry that has been evaluated in order to perform a more specific query of wells on the tract
-    tractBoundaries = tractshp[tractshp["tract_id"] == tractNum]["geometry"].iloc[0]
+    tractBoundaries = saleTracts[saleTracts["tract_id"] == tractNum]["geometry"].iloc[0]
     
     wellsWithinTract = geoDF.loc[geoDF.within(tractBoundaries)]
     
@@ -364,28 +400,30 @@ def writeOldProdSummary(geoDF, tractNum):
    
 if __name__ == '__main__':
 
-    from clean_prep import convertCRS
-    from clean_prep import miradius
+    # from clean_prep import convertCRS
+    # from clean_prep import miradius
+
+    os.chdir(f'../Sales/{config.get("SALE", "sale_dir")}')
 
     # reading dataframes from excel file
     fullFilteredLeases = pd.read_excel("Output Data/Sale Tracts Activity Data/Leases Around Sale Tracts.xlsx")
     fullFilteredPermits = pd.read_excel("Output Data/Sale Tracts Activity Data/Permits Around Sale Tracts.xlsx")
     fullFilteredProd = pd.read_excel("Output Data/Sale Tracts Activity Data/Prod Around Sale Tracts.xlsx")
     fullFilteredOldProd = pd.read_excel("Output Data/Sale Tracts Activity Data/OldProd Around Sale Tracts.xlsx")
-
-    # old production must be converted back into geodata frame because the write old prod summary... ->
-    # uses geospatial filtering to find wells within tract boundaries of tract
-    # *** Init CRS should be initial CRS of shapefile from import because we are creating the geometries based on the lat and longs
-    # *** Trying to import as a geodataframe using directly the geometry column was troublesome - geopandas did not recongize the column data type as point
+    #
+    # # old production must be converted back into geodata frame because the write old prod summary... ->
+    # # uses geospatial filtering to find wells within tract boundaries of tract
+    # # *** Init CRS should be initial CRS of shapefile from import because we are creating the geometries based on the lat and longs
+    # # *** Trying to import as a geodataframe using directly the geometry column was troublesome - geopandas did not recongize the column data type as point
     fullFilteredOldProd = gp.GeoDataFrame(fullFilteredOldProd, crs={'init': 'epsg:4326'},
-                                          geometry=gp.points_from_xy(fullFilteredOldProd["Longitude"],
-                                                                     fullFilteredOldProd["Latitude"]))
+                                           geometry=gp.points_from_xy(fullFilteredOldProd["Longitude"],
+                                                                      fullFilteredOldProd["Latitude"]))
 
     # converting oldprod geodataframe crs
-    convertCRS(fullFilteredOldProd)
+    # convertCRS(fullFilteredOldProd)
 
     # test tract and retrieve data around tract
-    tPerm, tProd, tLea, tOld = getActivityData(40)
+    tLea, tPerm, tProd, tOld = getActivityData(40, fullFilteredLeases, fullFilteredPermits, fullFilteredProd, fullFilteredOldProd)
 
     print(writeOldProdSummary(tOld, 37))
     print(writeProdSummary(tProd))
@@ -524,8 +562,8 @@ if __name__ == '__main__':
 #     if len(OldProd)>0:
 #
 #         #retrieving boundary of tract to look at wells wtihin and outside of tract
-#         #tractshp must be a global variable in the script
-#         tractBoundary = tractshp.loc[tractshp["tract_id"]==tractNum]["geometry"].iloc[0]
+#         #saleTracts must be a global variable in the script
+#         tractBoundary = saleTracts.loc[saleTracts["tract_id"]==tractNum]["geometry"].iloc[0]
 #
 #         outsideTract = OldProd.loc[~OldProd.within(tractBoundary)]
 #         insideTract = OldProd.loc[OldProd.within(tractBoundary)]
@@ -598,7 +636,7 @@ if __name__ == '__main__':
 #
 # # for i in range(15,17):
 #
-# #     tract = tractshp["tract_id"].iloc[i]
+# #     tract = saleTracts["tract_id"].iloc[i]
 #
 # #     a, b, c, d = prepareTractFilter(tract)
 #
@@ -627,7 +665,7 @@ if __name__ == '__main__':
 # oldproddashboard = []
 #
 # #looping through each tract id and creating filtered geospatial data, activity summaries, and visualizaiton plots
-# for i in tractshp["tract_id"]:
+# for i in saleTracts["tract_id"]:
 #     perm, prod, leases, oldprodtoeval = getActivityData(i)
 #
 #     try:
@@ -664,19 +702,19 @@ if __name__ == '__main__':
 #
 #
 # #appending columns to tract list with summaries for each data type (old prod, leases, permits, new production)
-# tractshp["Permit Summary"] = summaryPermits
+# saleTracts["Permit Summary"] = summaryPermits
 #
-# tractshp["Leases Summary"] = summaryLeases
+# saleTracts["Leases Summary"] = summaryLeases
 #
-# tractshp["Old Production Summary"] = summaryOldProd
+# saleTracts["Old Production Summary"] = summaryOldProd
 #
-# tractshp["Recent Prod Summary"] = summaryProd
+# saleTracts["Recent Prod Summary"] = summaryProd
 #
 #
 # # In[ ]:
 #
 #
-# tractshp.info()
+# saleTracts.info()
 #
 #
 # # ### Writing Summary Results to File
@@ -685,7 +723,7 @@ if __name__ == '__main__':
 #
 #
 # #saving activity notes in an excel file in the results folder - dropping geopandas required geo cols
-# tractshp.drop(columns = "geometry centroids buffers".split(" ")).to_excel("Results/Activity Summary Notes.xlsx")
+# saleTracts.drop(columns = "geometry centroids buffers".split(" ")).to_excel("Results/Activity Summary Notes.xlsx")
 #
 #
 # # In[ ]:
