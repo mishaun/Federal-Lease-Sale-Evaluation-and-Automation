@@ -1,0 +1,5 @@
+CREATE TABLE IF NOT EXISTS BLM_sales.sale_info(
+id SERIAL PRIMARY KEY,
+sale_name VARCHAR(100) UNIQUE,
+sale_date DATE
+);
