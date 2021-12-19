@@ -11,7 +11,7 @@ Developed by Mishaun Bhakta for Magnum Producing, LP and R&R Royalty, LTD
 2. Use ETL to move output data and summaries to database and report to upper management using Tableau
 
 ## Result
-* **This project solved the frequent occurence of missing opportunities based on lack of time/resoruces to evaluate each lease across multiple sales quickly**
+* **This project solved the frequent occurence of missing opportunities based on lack of time/resources to evaluate each lease across multiple sales quickly**
     * As a result, company generated $10M in profit by quicky identifying and buying prime acreage in Powder River Basin in June 2020 and participating in development wells with prolific production.
 
 <br>
@@ -19,7 +19,7 @@ Developed by Mishaun Bhakta for Magnum Producing, LP and R&R Royalty, LTD
 ### Project Flow Diagram
 ![flow_diagram](Images/data_flow.png)
 
-### Tableau Endpoint Demo
+### Tableau Utilization Demo
 ![tableau_demo](Images/tableaudemo.png)
 
 
