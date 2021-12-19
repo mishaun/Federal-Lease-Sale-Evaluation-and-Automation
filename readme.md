@@ -1,4 +1,4 @@
-# Federal Lease Sale Automation
+# Oil & Gas - Federal Lease Sale Evaluation Automation
 Developed by Mishaun Bhakta for Magnum Producing, LP and R&R Royalty, LTD
 <br><br>
 
@@ -14,8 +14,14 @@ Developed by Mishaun Bhakta for Magnum Producing, LP and R&R Royalty, LTD
 * **This project solved the frequent occurence of missing opportunities based on lack of time/resoruces to evaluate each lease across multiple sales quickly**
     * As a result, company generated $10M in profit by quicky identifying and buying prime acreage in Powder River Basin in June 2020 and participating in development wells with prolific production.
 
+<br>
+
+### Project Flow Diagram
+![flow_diagram](Images/data_flow.png)
+
+### Tableau Endpoint Demo
 ![tableau_demo](Images/tableaudemo.png)
-![erdiagram](Images/erdiagram.png)
+
 
 
 <br>
@@ -35,6 +41,8 @@ Developed by Mishaun Bhakta for Magnum Producing, LP and R&R Royalty, LTD
 
 ![demo](Images/demomanualanalysis.gif)
 
+<br>
+
 # Code and Packages
 
 1.  Code used: Python 3.7
@@ -42,8 +50,12 @@ Developed by Mishaun Bhakta for Magnum Producing, LP and R&R Royalty, LTD
     * Pandas, Geopandas
     * Selenium, Beautiful Soup, OS, pdfrw, Openpyxl
     
-    
+<br>
+
 # App
+
+App will accomplish goal 1 of project by reading in source data, applying geospatial filters, generating automated summaries, and exporting processed data to staging folder for ETL script to load into database.
+
 ## Script and Module Overviews
 
 <br>
@@ -94,7 +106,7 @@ leasestoeval["direction"] = leasestoeval["geometry"].apply(lambda x: cardDir(x, 
 
 <br>
 
-###  3.  Sale Note Summaries and Figure Automation
+###  3.  Sale Note Summaries
 
 This module will read in filtered data for each data source and write natural language summaries.  
 
@@ -104,17 +116,56 @@ This module will read in filtered data for each data source and write natural la
     * Pandas' functions heavily utilized to group and describe key fields
 
 
+<br>
 <hr>
+
+
+# ETL
+
+ETL script will pickup processed output data form main application and move data to AWS database.  
+See Process Flow Diagram.
 
 <br>
 
-## ETL
+### Process Flow Diagram
+
+![flow_diagram](Images/data_flow.png)
+
+<br>
+
+### Script and Module Details
+
+<br>
+
+1. etl_functions.py
+
+* Module with developed functions to handle:
+    * Reading files from passed paths and parsing information
+    * Retrieving sale id from parent table and appending it to dataframe/table staged for loading to database
+    * Quering database with passed table and associated sale id to check if records exist to control flow of loading function 
+    * Loading tables to database with functionality to handle newly inserted data with different schema than database schema
+
+2. load_parent_table.py
+
+* Script to load parent table with new sale name, date, and id
+
+3. etl_config.py
+
+* Config file contains:
+    * List of sales to run ETL
+    * File and table name mapping dictionary
+    * Paths for data directories and database config file
+    * Boolean variable to replace or not replace existing records for given table and sale 
+
+4. build_db_connection.py
+
+* Module with function to build pymysql or sqlalchemy database connection string from database config file
 
 <br>
 
 <hr>
 
-## Sale Template Automation
+# Sale Template Automation
 
 Inserting Meta Sale Data into Excel Spreadsheet and Automating Paperwork
 
@@ -132,3 +183,42 @@ Inserting Meta Sale Data into Excel Spreadsheet and Automating Paperwork
 * Reference article for completing this task: https://bostata.com/how-to-populate-fillable-pdfs-with-python/
 
 
+<br>
+<hr>
+
+# Tableau
+
+Tableau used for pre-sale and on the fly analysis during lease auctions for summarizing tract activity.  
+
+Dashboards created for following use cases:
+1. High level overview of sale and tracts based on permit count, highest production, competitive lease bonuses, and internal priority
+
+2. Drill down into tract to see granular details of lease bonus, production, and permits
+
+<br>
+
+### Tableau Dashboard - Lease and Permit Activity
+
+![lease and permit dashboard](Images/permit_and_lease_dashboard.png)
+* Example of tract analysis for permitting and leasing activity around tract 57 in Federal Lease Sale on 12-15-2020.
+
+<br>
+
+### Tableau Dashboard - Production Activity
+
+![production dashboard](Images/production_dashboard.png)
+
+* Example of tract analysis for permitting and leasing activity around tract 67 in Federal Lease Sale on 12-15-2020.
+
+<br>
+
+### Tableau Dashboard - High Level Overview
+
+![lease and permit dashboard](Images/high_level_overview_dashboard.png)
+* Example of identifying high potential tract based on permit count and bonus price. (Tract 57 in Federal Lease Sale on 12-15-2020.)
+
+<br>
+
+### Data Relationship
+![data_relationship](Images/tableau_relationship.png)
+* Processed lease, production, and permit data connected to each tract by sale id and tract_id

@@ -17,7 +17,7 @@ def main():
 
     # getting list of sale folders to run from config file
     for sale in sales_to_run:
-        print(f'Migrating Records to Database for sale {sale}')
+        print(f'Migrating Records to Database for sale {sale}\n')
 
         # looping through mapping dictionary imported from config file to get path, parse information, and table and file names
         for data_category in mappings.keys():
@@ -34,7 +34,7 @@ def main():
                 saleid = get_saleID(sale, db_connection)
                 df = add_foreignKey_to_df(df, 'sale_id', saleid)
 
-                print(f'Migrating records for table {table} pertaining to sale {sale}')
+                print(f'Migrating records for table {table} pertaining to sale {sale}]')
                 is_exists = check_if_records_exist(table_name=table, sale_id=saleid, db_conn=db_connection)
                 load_or_replace_to_table(df=df, table_name=table, sale_id = saleid, pymy_db_conn=db_connection, sqlaclch_engine=engine, recordsExist=is_exists, IsReplace=replaceExistingRecords)
 

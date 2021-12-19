@@ -1,7 +1,5 @@
 import os
 import pandas as pd
-import pymysql.err
-
 
 def read_file(sale_name, datadir, file_keyword, parseDict = None):
     '''
@@ -128,6 +126,7 @@ def load_or_replace_to_table(df, table_name, sale_id, pymy_db_conn, sqlaclch_eng
             print(e)
             # if schema changed from source data, filter columns from source data to the ones found in the database
             columnsindb = pd.read_sql(f"select * from {table_name} limit 0", sqlaclch_engine).columns
+            print("Schema in source data differs from database schema, attempting to filter source data to columns in DB only")
             df[columnsindb].to_sql(table_name, con=sqlaclch_engine, if_exists='append', index=False)
 
     # if records are already present, check replace parameter to delete existing records and insert
