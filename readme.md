@@ -20,7 +20,7 @@ Developed by Mishaun Bhakta for Magnum Producing, LP and R&R Royalty, LTD
 ![flow_diagram](Images/data_flow.png)
 
 ### Tableau Utilization Demo
-![tableau_demo](Images/tableaudemo.png)
+![tableau_demo](Images/tableau_demo.gif)
 
 
 
@@ -167,7 +167,9 @@ See Process Flow Diagram.
 
 # Sale Template Automation
 
-Inserting Meta Sale Data into Excel Spreadsheet and Automating Paperwork
+Webscraper for inserting Meta Sale Data into Excel Spreadsheet and Automating Paperwork.
+
+### Script Details
 
 1.  This script launches sale url and extracts the following data:
 * Tract serial numbers
