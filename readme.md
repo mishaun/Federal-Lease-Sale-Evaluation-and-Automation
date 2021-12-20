@@ -45,9 +45,10 @@ Developed by Mishaun Bhakta for Magnum Producing, LP and R&R Royalty, LTD
 
 # Code and Packages
 
-1.  Code used: Python 3.7
+1.  Code used: Python 3.6.1
 2.  Packages used include:
     * Pandas, Geopandas
+    * Pymysql, Sqlalchemy
     * Selenium, Beautiful Soup, OS, pdfrw, Openpyxl
     
 <br>
