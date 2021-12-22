@@ -1,7 +1,0 @@
-pandas
-pymysql
-numpy
-sqlalchemy
-xlrd
-fiona
-geopandas=0.10.2=pypi_0
