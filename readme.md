@@ -8,7 +8,7 @@ Developed by Mishaun Bhakta for Magnum Producing, LP and R&R Royalty, LTD
 
 
 
-2. Use ETL to move output data and summaries to database and report to upper management using Tableau
+2. Use ETL with Pandas to move output data and summaries to database and report to upper management using Tableau
 
 ## Result
 * **This project solved the frequent occurence of missing opportunities based on lack of time/resources to evaluate each lease across multiple sales quickly**
@@ -33,7 +33,7 @@ Developed by Mishaun Bhakta for Magnum Producing, LP and R&R Royalty, LTD
 * Manual analysis included writing summaries describing the surrounding area of the lease regarding oil and gas activity.  
     **Process could take at least 1 - 1.5 month to write notes for just 1 sale.**
     * Oil and gas activity includes: Production of existing wells, leases in the area, and permits filed for new wells
-    * Data gathering involved utilizaiton within licensed web application to query data with multiple, uneconomical cursor clicks 
+    * Data gathering involved utilization of licensed web application to query data with multiple, uneconomical cursor clicks 
 * Analysis would then be presented to CEO with Excel spreadsheet one by one, which would often fail due to limited time and resources to complete each sale thoroughly
 
 ### Image of Manual Process
